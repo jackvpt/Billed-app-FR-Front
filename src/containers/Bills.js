@@ -41,33 +41,32 @@ export default class {
         .bills()
         .list()
         .then((snapshot) => {
-          const bills = snapshot
-            .map((doc) => {
-              try {
-                return {
-                  ...doc,
-                  date: formatDate(doc.date),
-                  status: formatStatus(doc.status),
-                }
-              } catch (e) {
-                // if for some reason, corrupted data was introduced, we manage here failing formatDate function
-                // log the error and return unformatted date in that case
-                console.log(e, "for", doc)
-                return {
-                  ...doc,
-                  date: doc.date,
-                  status: formatStatus(doc.status),
-                }
+          const bills = snapshot.map((doc) => {
+            try {
+              return {
+                ...doc,
+                date: formatDate(doc.date),
+                status: formatStatus(doc.status),
               }
-            })
+            } catch (e) {
+              // if for some reason, corrupted data was introduced, we manage here failing formatDate function
+              // log the error and return unformatted date in that case
+              console.log(e, "for", doc)
+              return {
+                ...doc,
+                date: doc.date,
+                status: formatStatus(doc.status),
+              }
+            }
+          })
           console.log("length", bills.length)
-          console.log('bills :>> ', bills);
+          console.log("bills :>> ", bills)
 
-              // Tri des données par date (du plus ancien au plus récent)
-    bills.sort((a, b) => {
-      // Supposons ici que la date formatée reste exploitable par new Date()
-      return new Date(a.date) - new Date(b.date)
-    })
+          // Data sorted by date (from the most recent to the oldest)
+          bills.sort((a, b) => {
+          
+            return new Date(a.date) - new Date(b.date)
+          })
 
           return bills
         })

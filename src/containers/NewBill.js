@@ -16,6 +16,11 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
 
+  /**
+   * CHECK FILE TYPE TO REJECT BAD TYPES
+   * @param {file} file 
+   * @returns true or false depending on the file type
+   */
   checkFileType = (file) => {
     const acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg']
     if (file) {
