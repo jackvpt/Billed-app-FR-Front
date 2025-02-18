@@ -8,6 +8,9 @@ import { ROUTES } from "../constants/routes";
 import { fireEvent, screen } from "@testing-library/dom";
 
 describe("Given that I am a user on login page", () => {
+  /**
+   * TEST EMPLOYEE WHEN FIELDS ARE EMPTY
+   */
   describe("When I do not fill fields and I click on employee button Login In", () => {
     it("Then It should renders Login page", () => {
       document.body.innerHTML = LoginUI();
@@ -27,6 +30,43 @@ describe("Given that I am a user on login page", () => {
     });
   });
 
+  /**
+   * TEST EMPLOYEE WHEN LOGIN FAILS
+   */
+  describe("When login fails", () => {
+    it("Should create employee and renders Login page", async () => {
+      // Given
+      const login = new Login({
+        document,
+        localStorage: { setItem: jest.fn() },
+        onNavigate: jest.fn(),
+      });
+      const e = {
+        preventDefault: jest.fn(),
+        target: {
+          querySelector: jest.fn().mockImplementation((param) => {
+            if (param === `input[data-testid="employee-email-input"]`) {
+              return { value: "test@toto.com" };
+            }
+            return { value: "azerty123" };
+          }),
+        },
+      };
+      jest.spyOn(login, "login").mockImplementation(() => Promise.reject());
+      jest.spyOn(login, "createUser");
+
+      // When
+      await login.handleSubmitEmployee(e);
+
+      // Then
+      expect(login.createUser).toHaveBeenCalled();
+      expect(screen.getByTestId("form-employee")).toBeTruthy();
+    });
+  });
+
+  /**
+   * TEST EMPLOYEE WHEN FIELDS ARE IN INCORRECT FORMAT
+   */
   describe("When I do fill fields in incorrect format and I click on employee button Login In", () => {
     it("Then It should renders Login page", () => {
       document.body.innerHTML = LoginUI();
@@ -48,6 +88,9 @@ describe("Given that I am a user on login page", () => {
     });
   });
 
+  /**
+   * TEST EMPLOYEE WHEN FIELDS ARE IN CORRECT FORMAT
+   */
   describe("When I do fill fields in correct format and I click on employee button Login In", () => {
     it("Then I should be identified as an Employee in app", () => {
       document.body.innerHTML = LoginUI();
@@ -111,12 +154,15 @@ describe("Given that I am a user on login page", () => {
       );
     });
 
-    test("It should renders Bills page", () => {
+    it("Should renders Bills page", () => {
       expect(screen.getAllByText("Mes notes de frais")).toBeTruthy();
     });
   });
 });
 
+/**
+ * TEST ADMIN WHEN FIELDS ARE EMPTY
+ */
 describe("Given that I am a user on login page", () => {
   describe("When I do not fill fields and I click on admin button Login In", () => {
     it("Then It should renders Login page", () => {
@@ -137,6 +183,43 @@ describe("Given that I am a user on login page", () => {
     });
   });
 
+  /**
+   * TEST ADMIN WHEN LOGIN FAILS
+   */
+  describe("And login fails", () => {
+    it("Should create admin and renders Login page", async () => {
+      // Given
+      const login = new Login({
+        document,
+        localStorage: { setItem: jest.fn() },
+        onNavigate: jest.fn(),
+      });
+      const e = {
+        preventDefault: jest.fn(),
+        target: {
+          querySelector: jest.fn().mockImplementation((param) => {
+            if (param === `input[data-testid="employee-email-input"]`) {
+              return { value: "test@toto.com" };
+            }
+            return { value: "azerty123" };
+          }),
+        },
+      };
+      jest.spyOn(login, "login").mockImplementation(() => Promise.reject());
+      jest.spyOn(login, "createUser");
+
+      // When
+      await login.handleSubmitAdmin(e);
+
+      // Then
+      expect(login.createUser).toHaveBeenCalled();
+      expect(screen.getByTestId("form-employee")).toBeTruthy();
+    });
+  });
+
+  /**
+   * TEST ADMIN WHEN FIELDS ARE IN INCORRECT FORMAT
+   */
   describe("When I do fill fields in incorrect format and I click on admin button Login In", () => {
     it("Then it should renders Login page", () => {
       document.body.innerHTML = LoginUI();
@@ -158,8 +241,11 @@ describe("Given that I am a user on login page", () => {
     });
   });
 
+  /**
+   * TEST ADMIN WHEN FIELDS ARE IN CORRECT FORMAT
+   */
   describe("When I do fill fields in correct format and I click on admin button Login In", () => {
-    it("Then I should be identified as an HR admin in app", () => {
+    it("Should identify me as an HR admin in app", () => {
       document.body.innerHTML = LoginUI();
       const inputData = {
         type: "Admin",
@@ -223,7 +309,7 @@ describe("Given that I am a user on login page", () => {
       );
     });
 
-    test("It should renders HR dashboard page", () => {
+    it("Should renders HR dashboard page", () => {
       expect(screen.queryByText("Validations")).toBeTruthy();
     });
   });

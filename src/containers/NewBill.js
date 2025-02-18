@@ -16,28 +16,13 @@ export default class NewBill {
     new Logout({ document, localStorage, onNavigate })
   }
 
-  /**
-   * CHECK FILE TYPE TO REJECT BAD TYPES
-   * @param {file} file 
-   * @returns true or false depending on the file type
-   */
-  checkFileType = (file) => {
-    const acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg']
-    if (file) {
-      if (acceptedTypes.includes(file.type)) {
-        return true
-      } else {
-        alert('Type de fichier non pris en charge')
-        return false
-      }
-    }
-    return false
-  }
+
 
   handleChangeFile = e => {
+    console.log('e.target.value', e.target.value)
     e.preventDefault()
     const file = this.document.querySelector(`input[data-testid="file"]`).files[0]
-    const isValidFileType = this.checkFileType(file)
+    const isValidFileType = checkFileType(file)
     if (!isValidFileType) return
     const filePath = e.target.value.split(/\\/g)
     const fileName = filePath[filePath.length-1]
@@ -95,3 +80,21 @@ export default class NewBill {
     }
   }
 }
+
+  /**
+   * CHECK FILE TYPE TO REJECT BAD TYPES
+   * @param {file} file 
+   * @returns true or false depending on the file type
+   */
+  export const checkFileType = (file) => {
+    const acceptedTypes = ['image/png', 'image/jpeg', 'image/jpg']
+    if (file) {
+      if (acceptedTypes.includes(file.type)) {
+        return true
+      } else {
+        alert('Type de fichier non pris en charge')
+        return false
+      }
+    }
+    return false
+  }
