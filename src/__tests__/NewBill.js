@@ -279,7 +279,7 @@ describe("Given I am a user connected as Employee", () => {
 /**
  * TEST GET
  */
-describe("Given I am a user connected as Employee", () => { 
+describe("Given I am a user connected as Employee", () => {
   describe("When I navigate to NewBill page", () => {
     let newBillPage
 
@@ -318,7 +318,195 @@ describe("Given I am a user connected as Employee", () => {
       const newBillForm = screen.getByTestId("form-new-bill")
       expect(newBillForm).toBeTruthy()
     })
+  })
+})
 
+// Test GET #2
+describe("Given I am a user connected as Employee", () => {
+  describe("When I navigate to Bills", () => {
+    it("Should fetch bills from mock API GET", async () => {
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ type: "Employee", email: "a@a" })
+      )
+      const root = document.createElement("div")
+      root.setAttribute("id", "root")
+      document.body.append(root)
+      router()
+      window.onNavigate(ROUTES_PATH.Bills)
+      await waitFor(() => screen.getByText("Mes notes de frais"))
+      const tableFields = ["Type", "Nom", "Montant", "Statut", "Actions"]
+      tableFields.forEach((field) => {
+        expect(screen.getByText(field)).toBeTruthy()
+      })
+    })
+    describe("When an error occurs on API", () => {
+      beforeEach(() => {
+        jest.spyOn(mockStore, "bills")
+        Object.defineProperty(window, "localStorage", {
+          value: localStorageMock,
+        })
+        window.localStorage.setItem(
+          "user",
+          JSON.stringify({
+            type: "Employee",
+            email: "a@a",
+          })
+        )
+        const root = document.createElement("div")
+        root.setAttribute("id", "root")
+        document.body.appendChild(root)
+        router()
+      })
+      it("Should fetch bills from an API and fails with 404 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 404"))
+            },
+          }
+        })
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick)
+        const message = await screen.getByText(/Erreur 404/)
+        expect(message).toBeTruthy()
+      })
 
+      it("Should fetch messages from an API and fails with 500 message error", async () => {
+        mockStore.bills.mockImplementationOnce(() => {
+          return {
+            list: () => {
+              return Promise.reject(new Error("Erreur 500"))
+            },
+          }
+        })
+
+        window.onNavigate(ROUTES_PATH.Bills)
+        await new Promise(process.nextTick)
+        const message = await screen.getByText(/Erreur 500/)
+        expect(message).toBeTruthy()
+      })
+    })
+  })
+})
+
+/**
+ * TEST HandleChangeFile
+ */
+describe("When I select a new file", () => {
+  let instance, store, localStorageMock, onNavigate, documentElement
+  beforeEach(() => {
+    // Minimal DOM creation
+    document.body.innerHTML =
+      '<form data-testid="form-new-bill"><input type="file" data-testid="file" />       </form>    '
+      // onNavigate simulation (for redirection)
+    onNavigate = jest.fn()
+    // Fake store creation with bills() method returning an object with create()
+    store = {
+      bills: jest.fn(() => ({
+        create: jest.fn(() =>
+          Promise.resolve({
+            fileUrl: "urlTest",
+            key: "billID",
+          })
+        ),
+      })),
+    }
+    // LocalStorage simulation
+    localStorageMock = {
+      getItem: jest.fn(() =>
+        JSON.stringify({ email: "test@test.com (mailto:test@test.com)" })
+      ),
+      setItem: jest.fn(),
+    }
+    // NewBill instance creation with fake document, onNavigate, store and localStorage
+    instance = new NewBill({
+      document,
+      onNavigate,
+      store,
+      localStorage: localStorageMock,
+    })
+  })
+  afterEach(() => {
+    jest.clearAllMocks()
+  })
+  it("Should not upload file if type is unvalid", () => {
+    // Replace alert method to check if it's called
+    window.alert = jest.fn()
+
+    // DOM input file retrieval
+    const inputFile = document.querySelector(`input[data-testid="file"]`)
+    // Unvalid file type creation
+    const invalidFile = new File(["dummy data"], "test.txt", {
+      type: "text/plain",
+    })
+    // Set input files property
+    Object.defineProperty(inputFile, "files", {
+      value: [invalidFile],
+      writable: true,
+    })
+
+    // Fake event creation with target.value and target.files
+    const e = {
+      preventDefault: jest.fn(),
+      target: {
+        value: "C:\\fakepath\\test.txt",
+        files: [invalidFile],
+      },
+    }
+
+    // Method execution
+    instance.handleChangeFile(e)
+
+    // Check that e.preventDefault has been called
+    expect(e.preventDefault).toHaveBeenCalled()
+
+    // Check that alert has been called with the right message
+    expect(window.alert).toHaveBeenCalledWith(
+      "Type de fichier non pris en charge"
+    )
+    expect(store.bills).not.toHaveBeenCalled()
+    // No change should be made on instance properties
+    expect(instance.fileUrl).toBeNull()
+    expect(instance.billId).toBeNull()
+  })
+  test("doit uploader le fichier si le type est valide", (done) => {
+    // Input file retrieval
+    const inputFile = document.querySelector('input[data-testid="file"]')
+    // Valid file creation (image/png)
+    const validFile = new File(["dummy data"], "test.png", {
+      type: "image/png",
+    })
+    Object.defineProperty(inputFile, "files", {
+      value: [validFile],
+      writable: true,
+    })
+
+    // Event simulation with a value representing the simulated path
+    const e = {
+      preventDefault: jest.fn(),
+      target: {
+        value: "C:\\fakepath\\test.png",
+        files: [validFile],
+      },
+    }
+
+    // Method execution
+    instance.handleChangeFile(e)
+
+    // Method calls are made in the next tick, so we have to wait for it to be resolved
+    process.nextTick(() => {
+      // Check that bills() method has been called
+      expect(store.bills).toHaveBeenCalled()
+      // Retrieve the instance of the object returned by store.bills()
+      const billsInstance = store.bills.mock.results[0].value
+      expect(billsInstance.create).toHaveBeenCalled()
+
+      // Check that instance properties have been updated
+      expect(instance.billId).toBe("billID")
+      expect(instance.fileUrl).toBe("urlTest")
+      expect(instance.fileName).toBe("test.png")
+      done()
+    })
   })
 })
