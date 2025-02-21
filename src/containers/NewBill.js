@@ -41,7 +41,7 @@ export default class NewBill {
         },
       })
       .then(({ key }) => {
-        console.log(fileUrl)
+        // console.log(fileUrl)
         this.billId = key
         this.fileUrl = fileUrl
         this.fileName = fileName
@@ -51,10 +51,10 @@ export default class NewBill {
 
   handleSubmit = (e) => {
     e.preventDefault()
-    console.log(
-      'e.target.querySelector(`input[data-testid="datepicker"]`).value',
-      e.target.querySelector(`input[data-testid="datepicker"]`).value
-    )
+    // console.log(
+    //   'e.target.querySelector(`input[data-testid="datepicker"]`).value',
+    //   e.target.querySelector(`input[data-testid="datepicker"]`).value
+    // )
     if (!this.fileUrl || !this.fileName) {
       alert("Veuillez ajouter un justificatif valide")
       return

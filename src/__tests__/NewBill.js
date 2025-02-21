@@ -16,6 +16,8 @@ import { checkFileType } from "../containers/NewBill.js"
 import router from "../app/Router.js"
 
 jest.mock("../app/store", () => mockStore)
+jest.spyOn(window, 'alert').mockImplementation(() => {});
+
 
 /**
  * TEST IF THE WINDOW ICON IS HIGHLIGHTED

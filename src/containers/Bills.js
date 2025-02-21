@@ -59,8 +59,8 @@ export default class {
               }
             }
           })
-          console.log("length", bills.length)
-          console.log("bills :>> ", bills)
+          // console.log("length", bills.length)
+          // console.log("bills :>> ", bills)
 
           // Data sorted by date (from the most recent to the oldest)
           bills.sort((a, b) => {
