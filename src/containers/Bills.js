@@ -64,7 +64,6 @@ export default class {
 
           // Data sorted by date (from the most recent to the oldest)
           bills.sort((a, b) => {
-          
             return new Date(a.date) - new Date(b.date)
           })
 

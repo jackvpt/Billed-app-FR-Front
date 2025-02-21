@@ -171,7 +171,7 @@ describe("Given I am connected as an employee and I am on Bill page", () => {
   })
 
   /**
-   * TEST GET FUNCTION
+   * TEST GET BILLS
    */
   it("Should fetch bills from mock API", async () => {
     // Store user as employee in local storage
