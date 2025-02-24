@@ -12,7 +12,7 @@ describe("Given that I am a user on login page", () => {
    * TEST EMPLOYEE WHEN FIELDS ARE EMPTY
    */
   describe("When I do not fill fields and I click on employee button Login In", () => {
-    it("Then It should renders Login page", () => {
+    it("Should renders Login page", () => {
       document.body.innerHTML = LoginUI()
 
       const inputEmailUser = screen.getByTestId("employee-email-input")
@@ -68,7 +68,7 @@ describe("Given that I am a user on login page", () => {
    * TEST EMPLOYEE WHEN FIELDS ARE IN INCORRECT FORMAT
    */
   describe("When I do fill fields in incorrect format and I click on employee button Login In", () => {
-    it("Then It should renders Login page", () => {
+    it("Should renders Login page", () => {
       document.body.innerHTML = LoginUI()
 
       const inputEmailUser = screen.getByTestId("employee-email-input")
@@ -92,7 +92,7 @@ describe("Given that I am a user on login page", () => {
    * TEST EMPLOYEE WHEN FIELDS ARE IN CORRECT FORMAT
    */
   describe("When I do fill fields in correct format and I click on employee button Login In", () => {
-    it("Then I should be identified as an Employee in app", () => {
+    it("Should be identified as an Employee in app", () => {
       document.body.innerHTML = LoginUI()
       const inputData = {
         email: "johndoe@email.com",
@@ -165,7 +165,7 @@ describe("Given that I am a user on login page", () => {
  */
 describe("Given that I am a user on login page", () => {
   describe("When I do not fill fields and I click on admin button Login In", () => {
-    it("Then It should renders Login page", () => {
+    it("Should renders Login page", () => {
       document.body.innerHTML = LoginUI()
 
       const inputEmailUser = screen.getByTestId("admin-email-input")
@@ -221,7 +221,7 @@ describe("Given that I am a user on login page", () => {
    * TEST ADMIN WHEN FIELDS ARE IN INCORRECT FORMAT
    */
   describe("When I do fill fields in incorrect format and I click on admin button Login In", () => {
-    it("Then it should renders Login page", () => {
+    it("Should renders Login page", () => {
       document.body.innerHTML = LoginUI()
 
       const inputEmailUser = screen.getByTestId("admin-email-input")
